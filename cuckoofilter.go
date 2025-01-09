@@ -9,9 +9,7 @@ import (
 type cuckooHash uint64
 type fingerprint uint8
 
-const (
-	nullFp fingerprint = 0
-)
+const nullFp fingerprint = 0
 
 type bucket struct {
 	slots []fingerprint
