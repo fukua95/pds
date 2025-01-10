@@ -1,4 +1,4 @@
-package pds
+package cuckoofilter
 
 import (
 	"strconv"
@@ -10,7 +10,7 @@ import (
 const defaultBucketSize = 2
 
 func TestBasicOps(t *testing.T) {
-	cf := NewCuckooFilter(50, defaultBucketSize, 20, 1)
+	cf := New(50, defaultBucketSize, 20, 1)
 	assert.Equal(t, cf.itemNum, uint64(0))
 	assert.Equal(t, cf.filterNum, uint16(1))
 
@@ -34,7 +34,7 @@ func TestBasicOps(t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
-	cf := NewCuckooFilter(10, defaultBucketSize, 20, 1)
+	cf := New(10, defaultBucketSize, 20, 1)
 	k1 := []byte("key11111")
 	assert.Equal(t, cf.Count(k1), uint64(0))
 
@@ -52,7 +52,7 @@ func TestCount(t *testing.T) {
 
 func TestRelocations(t *testing.T) {
 	cap := 10000
-	cf := NewCuckooFilter(uint64(cap/2), 4, 20, 1)
+	cf := New(uint64(cap/2), 4, 20, 1)
 	assert.Equal(t, cf.itemNum, uint64(0))
 	assert.Equal(t, cf.filterNum, uint16(1))
 
@@ -88,7 +88,7 @@ func countCollision(t *testing.T, cf *CuckooFilter, cap int) uint {
 
 func TestFalsePositiveRate(t *testing.T) {
 	cap := 10000
-	cf := NewCuckooFilter(uint64(cap), defaultBucketSize, 50, 1)
+	cf := New(uint64(cap), defaultBucketSize, 50, 1)
 	assert.Equal(t, cf.bucketNum*uint64(cf.bucketSize), uint64(16384))
 
 	fill(cf, cap)
@@ -99,7 +99,7 @@ func TestFalsePositiveRate(t *testing.T) {
 	assert.LessOrEqual(t, float64(countCollision(t, cf, cap)), float64(cap)*fpr)
 
 	for _, v := range []int{2, 4} {
-		cf = NewCuckooFilter(uint64(cap/v), defaultBucketSize, 50, 1)
+		cf = New(uint64(cap/v), defaultBucketSize, 50, 1)
 		fill(cf, cap)
 		assert.Equal(t, cf.itemNum, uint64(cap))
 		assert.LessOrEqual(t, float64(countCollision(t, cf, cap)), float64(cap)*fpr*float64(v))
@@ -108,7 +108,7 @@ func TestFalsePositiveRate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	cap := 10000
-	cf := NewCuckooFilter(uint64(cap/8), defaultBucketSize, 50, 1)
+	cf := New(uint64(cap/8), defaultBucketSize, 50, 1)
 	fill(cf, cap)
 	assert.Equal(t, cf.itemNum, uint64(cap))
 	for i := 0; i < cap; i++ {
@@ -120,7 +120,7 @@ func TestDelete(t *testing.T) {
 
 func TestDeleteWithExpansion(t *testing.T) {
 	cap := 10000
-	cf := NewCuckooFilter(uint64(cap/8), defaultBucketSize, 50, 2)
+	cf := New(uint64(cap/8), defaultBucketSize, 50, 2)
 	fill(cf, cap)
 	for i := 0; i < cap; i++ {
 		k := []byte(strconv.Itoa(i))
@@ -134,7 +134,7 @@ func TestBucketSize(t *testing.T) {
 	bucketSize := []uint16{1, 2, 4}
 	ExpectedFilterNum := []uint16{12, 11, 10}
 	for i := range bucketSize {
-		cf := NewCuckooFilter(uint64(cap/10), bucketSize[i], 50, 1)
+		cf := New(uint64(cap/10), bucketSize[i], 50, 1)
 		fill(cf, cap)
 		assert.Equal(t, cf.bucketSize, bucketSize[i])
 		assert.Equal(t, cf.filterNum, ExpectedFilterNum[i])

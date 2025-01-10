@@ -1,4 +1,4 @@
-package pds
+package cuckoofilter
 
 import (
 	"math"
@@ -169,7 +169,7 @@ func next2N(n uint64) uint64 {
  *  the number of attempts to find a slot for the incoming fingerprint.
  *  its default value is 20.
  */
-func NewCuckooFilter(capacity uint64, bucketSize uint16, maxIter uint16, expansion uint16) *CuckooFilter {
+func New(capacity uint64, bucketSize uint16, maxIter uint16, expansion uint16) *CuckooFilter {
 	filter := &CuckooFilter{
 		expansion:  uint16(next2N(uint64(expansion))),
 		bucketSize: bucketSize,
